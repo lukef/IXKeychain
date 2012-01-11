@@ -1,5 +1,5 @@
 //
-//  Keychain.m
+//  IXKeychain.m
 //  DishFreely
 //
 //  Created by Luke Freeman on 10/6/11.
