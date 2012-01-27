@@ -80,7 +80,6 @@
 	NSData *valueData = [NSKeyedArchiver archivedDataWithRootObject:aValue];
 	
 	aKey = [Keychain normalizeKey:aKey];
-	NSLog(@"storing value for key: '%@'", aKey);
     
 	// check the status of the value (exists / doesn't)
 	OSStatus valStatus = [Keychain valueStatusForKey:aKey];
