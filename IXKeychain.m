@@ -30,17 +30,15 @@
 }
 
 + (NSString *)appName {    
+	
 	NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-    
-	// Attempt to find a name for this application
-	NSString *appName = [bundle objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+	NSString *appName = [bundle objectForInfoDictionaryKey:@"CFBundleIdentifier"];
 	if (!appName) {
 		appName = [bundle objectForInfoDictionaryKey:@"CFBundleName"];	
 	}
 	
     return appName;
 }
-
 
 + (NSString *)normalizeKey:(NSString *)aKey {
 	return [NSString stringWithFormat:@"%@.%@", [Keychain appName], aKey];
@@ -118,10 +116,8 @@
 	
 	CFDataRef dataRef = nil;
 	OSStatus queryResult = SecItemCopyMatching ((__bridge CFDictionaryRef)retrieveQueryDict, (CFTypeRef *)&dataRef);
-	
-	NSData *valueData = (__bridge_transfer NSData *)dataRef;
-
 	if (queryResult == errSecSuccess) {
+		NSData *valueData = (__bridge NSData *)dataRef;
 		id value = [NSKeyedUnarchiver unarchiveObjectWithData:valueData];
 		return value;
 	} 
