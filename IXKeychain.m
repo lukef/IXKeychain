@@ -15,8 +15,6 @@
 @interface Keychain ()
 
 + (NSString *)serviceName;
-+ (NSString *)appName;
-+ (NSString *)normalizeKey:(NSString *)aKey;
 
 + (NSMutableDictionary *)dictionaryBaseForKey:(NSString *)aKey;
 + (NSMutableDictionary *)dictionaryBaseForKey:(NSString *)aKey skipClass:(BOOL)aSkipClass;
@@ -27,21 +25,6 @@
 
 + (NSString *)serviceName {
 	return @"service";
-}
-
-+ (NSString *)appName {    
-	
-	NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-	NSString *appName = [bundle objectForInfoDictionaryKey:@"CFBundleIdentifier"];
-	if (!appName) {
-		appName = [bundle objectForInfoDictionaryKey:@"CFBundleName"];	
-	}
-	
-    return appName;
-}
-
-+ (NSString *)normalizeKey:(NSString *)aKey {
-	return [NSString stringWithFormat:@"%@.%@", [Keychain appName], aKey];
 }
 
 + (NSMutableDictionary *)dictionaryBaseForKey:(NSString *)aKey {
@@ -69,15 +52,14 @@
 	return ([Keychain valueStatusForKey:aKey] == errSecSuccess);
 }
 
-
-// NOTE: aValue or any sub objects must conform to the NSCoding protocol
+/* 
+ * NOTE: aValue or any sub objects must conform to the NSCoding protocol
+ */
 + (BOOL)setSecureValue:(id)aValue forKey:(NSString *)aKey {
 
 	if (aValue == nil || aKey == nil) return NO;
     
 	NSData *valueData = [NSKeyedArchiver archivedDataWithRootObject:aValue];
-	
-	aKey = [Keychain normalizeKey:aKey];
     
 	// check the status of the value (exists / doesn't)
 	OSStatus valStatus = [Keychain valueStatusForKey:aKey];
@@ -94,7 +76,7 @@
 
 		// exists .. update
 		NSMutableDictionary *updateQueryDict = [Keychain dictionaryBaseForKey:aKey];
-		NSDictionary *valueDict = [NSDictionary dictionaryWithObject:valueData forKey:(__bridge id)kSecAttrGeneric];
+		NSDictionary *valueDict = [NSDictionary dictionaryWithObject:valueData forKey:(__bridge id)kSecValueData];
 		
 		valStatus = SecItemUpdate ((__bridge CFDictionaryRef)updateQueryDict, (__bridge CFDictionaryRef)valueDict);
 		NSAssert1(valStatus == errSecSuccess, @"Value update returned status %d", valStatus);
@@ -108,8 +90,6 @@
 }
 
 + (id)secureValueForKey:(NSString *)aKey {
-
-    aKey = [Keychain normalizeKey:aKey];
     
 	NSMutableDictionary *retrieveQueryDict = [Keychain dictionaryBaseForKey:aKey];
 	[retrieveQueryDict setObject:(id)kCFBooleanTrue forKey:(__bridge id)kSecReturnData];		// make sure data comes back
@@ -129,8 +109,6 @@
 }
 
 + (BOOL)removeSecureValueForKey:(NSString *)aKey {
-
-	aKey = [Keychain normalizeKey:aKey];
 	
 	NSDictionary *deleteQueryDict = [Keychain dictionaryBaseForKey:aKey];
     OSStatus queryResult = SecItemDelete((__bridge CFDictionaryRef)deleteQueryDict);
