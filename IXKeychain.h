@@ -11,6 +11,9 @@
 
 @interface Keychain : NSObject
 
++ (NSString *)serviceName;
++ (void)setServiceName:(NSString*)serviceName;
+
 + (BOOL)setSecureValue:(NSString *)string forKey:(NSString *)key;
 + (NSString *)secureValueForKey:(NSString *)key;
 + (BOOL)removeSecureValueForKey:(NSString *)aKey;

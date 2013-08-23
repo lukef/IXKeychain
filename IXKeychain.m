@@ -23,8 +23,14 @@
 
 @implementation Keychain
 
+static NSString *keychainServiceName = nil;
+
 + (NSString *)serviceName {
-	return @"service";
+    return (keychainServiceName == nil) ? @"service" : keychainServiceName;
+}
+
++ (void)setServiceName:(NSString*)serviceName {
+    keychainServiceName = serviceName;
 }
 
 + (NSMutableDictionary *)dictionaryBaseForKey:(NSString *)aKey {
