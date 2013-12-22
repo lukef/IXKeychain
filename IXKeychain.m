@@ -23,8 +23,14 @@
 
 @implementation Keychain
 
+static NSString *keychainServiceName = nil;
+
 + (NSString *)serviceName {
-	return @"service";
+    return (keychainServiceName == nil) ? @"service" : keychainServiceName;
+}
+
++ (void)setServiceName:(NSString*)serviceName {
+    keychainServiceName = serviceName;
 }
 
 + (NSMutableDictionary *)dictionaryBaseForKey:(NSString *)aKey {
@@ -70,7 +76,7 @@
 		[addQueryDict setObject:valueData forKey:(__bridge id)kSecValueData];
             
 		valStatus = SecItemAdd ((__bridge CFDictionaryRef)addQueryDict, NULL);
-		NSAssert1(valStatus == errSecSuccess, @"Value add returned status %d", valStatus);
+		NSAssert1(valStatus == errSecSuccess, @"Value add returned status %d", (int)valStatus);
 	} 
 	else if (valStatus == errSecSuccess) {
 
@@ -79,11 +85,11 @@
 		NSDictionary *valueDict = [NSDictionary dictionaryWithObject:valueData forKey:(__bridge id)kSecValueData];
 		
 		valStatus = SecItemUpdate ((__bridge CFDictionaryRef)updateQueryDict, (__bridge CFDictionaryRef)valueDict);
-		NSAssert1(valStatus == errSecSuccess, @"Value update returned status %d", valStatus);
+		NSAssert1(valStatus == errSecSuccess, @"Value update returned status %d", (int)valStatus);
 		
 	} 
 	else {
-		NSAssert2(NO, @"Received mismatched status (%d) while setting keychain value for key %@", valStatus, aKey);
+		NSAssert2(NO, @"Received mismatched status (%d) while setting keychain value for key %@", (int)valStatus, aKey);
 	}
 	
 	return YES;
@@ -102,7 +108,7 @@
 		return value;
 	} 
 	else {
-		NSAssert2(queryResult == errSecItemNotFound, @"Received mismatched status (%d) while retriveing keychain value for key %@", queryResult, aKey);
+		NSAssert2(queryResult == errSecItemNotFound, @"Received mismatched status (%d) while retriveing keychain value for key %@", (int)queryResult, aKey);
 	}		
 	
 	return nil;
@@ -116,7 +122,7 @@
 		return YES;
 	}
 	else {
-		NSAssert2(queryResult == errSecItemNotFound, @"Received mismatched status (%d) while deleting keychain value for key %@", queryResult, aKey);
+		NSAssert2(queryResult == errSecItemNotFound, @"Received mismatched status (%d) while deleting keychain value for key %@", (int)queryResult, aKey);
 		return NO;
 	}
 }
