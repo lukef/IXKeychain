@@ -103,7 +103,7 @@ static NSString *keychainServiceName = nil;
 	CFDataRef dataRef = nil;
 	OSStatus queryResult = SecItemCopyMatching ((__bridge CFDictionaryRef)retrieveQueryDict, (CFTypeRef *)&dataRef);
 	if (queryResult == errSecSuccess) {
-		NSData *valueData = (__bridge NSData *)dataRef;
+		NSData *valueData = (__bridge_transfer NSData *)dataRef;
 		id value = [NSKeyedUnarchiver unarchiveObjectWithData:valueData];
 		return value;
 	} 
