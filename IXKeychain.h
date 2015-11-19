@@ -9,6 +9,8 @@
 //	https://github.com/rackspace/rackspace-ios
 //
 
+#import <Foundation/Foundation.h>
+
 @interface Keychain : NSObject
 
 + (NSString *)serviceName;
